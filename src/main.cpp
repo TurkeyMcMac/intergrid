@@ -27,9 +27,8 @@ int main()
         printf("SDL renderer creation failed; %s\n", SDL_GetError());
         goto error_create_surface;
     }
-    Uint32 ticks;
     for (;;) {
-        ticks = SDL_GetTicks();
+        Uint32 ticks = SDL_GetTicks();
         if (SDL_PollEvent(&event) && event.type == SDL_QUIT) {
             break;
         }
