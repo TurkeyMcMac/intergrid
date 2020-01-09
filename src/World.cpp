@@ -103,16 +103,36 @@ static void precipitate(Grid<float>& clouds, Grid<float>& water)
     }
 }
 
+static void cool_down(Grid<float>& temperature)
+{
+    for (size_t x = 0; x < temperature.get_width(); ++x) {
+        for (size_t y = 0; y < temperature.get_height(); ++y) {
+            temperature.at(x, y) *= 0.99;
+        }
+    }
+}
+
+static void produce_body_heat(Grid<float>& plants, Grid<float>& temperature)
+{
+    for (size_t x = 0; x < plants.get_width(); ++x) {
+        for (size_t y = 0; y < plants.get_height(); ++y) {
+            temperature.at(x, y) += plants.at(x, y) / 50.;
+        }
+    }
+}
+
 void World::simulate()
 {
     Grid<float> next(get_width(), get_height());
-    disperse(temperature, 0.2, next);
+    disperse(temperature, 0.15, next);
     disperse(plants, 0.02, next);
     disperse(water, 0.02, next);
     disperse(clouds, 0.1, next);
     breed_plants(plants, temperature, water, clouds);
     vaporize(temperature, plants, water, clouds);
     precipitate(clouds, water);
+    cool_down(temperature);
+    produce_body_heat(plants, temperature);
 }
 
 static unsigned char amount2color(float amount)
