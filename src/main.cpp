@@ -27,18 +27,14 @@ int main()
         printf("SDL renderer creation failed; %s\n", SDL_GetError());
         goto error_create_surface;
     }
-    long turns;
     Uint32 ticks;
-    turns = 0;
     for (;;) {
         ticks = SDL_GetTicks();
         if (SDL_PollEvent(&event) && event.type == SDL_QUIT) {
             break;
         }
-        if (turns++ % 100 == 0) {
-            world.draw(renderer);
-            SDL_RenderPresent(renderer);
-        }
+        world.draw(renderer);
+        SDL_RenderPresent(renderer);
         world.simulate();
         Uint32 new_ticks = SDL_GetTicks();
         if (new_ticks - ticks < 100) {
