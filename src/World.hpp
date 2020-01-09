@@ -4,6 +4,11 @@
 #include "Grid.hpp"
 #include <SDL2/SDL.h>
 
+struct Herbivore {
+    float food;
+    bool moved;
+};
+
 class World {
 public:
     World(size_t width, size_t height);
@@ -23,6 +28,7 @@ private:
     Grid<float> plants;
     Grid<float> water;
     Grid<float> clouds;
+    Grid<Herbivore> herbivores;
 };
 
 #endif /* WORLD_H_ */

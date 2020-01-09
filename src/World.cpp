@@ -5,6 +5,7 @@ World::World(size_t width, size_t height)
     , plants(width, height)
     , water(width, height)
     , clouds(width, height)
+    , herbivores(width, height)
 {
 }
 
@@ -22,6 +23,8 @@ void World::randomize()
             temperature.at(x, y) = random_float() * 10.;
             water.at(x, y) = random_float() * 10.;
             clouds.at(x, y) = random_float() * 10.;
+            herbivores.at(x, y).food
+                = rand() / (RAND_MAX / 100) == 0 ? 10. : 0.;
         }
     }
 }
@@ -121,6 +124,66 @@ static void produce_body_heat(Grid<float>& plants, Grid<float>& temperature)
     }
 }
 
+static void eat_plants(Grid<Herbivore>& herbivores, Grid<float>& plants)
+{
+    for (size_t x = 0; x < herbivores.get_width(); ++x) {
+        for (size_t y = 0; y < herbivores.get_height(); ++y) {
+            if (herbivores.at(x, y).food > 0.) {
+                herbivores.at(x, y).food += plants.at(x, y) * 0.1 - 0.2;
+                plants.at(x, y) = 0;
+            }
+        }
+    }
+}
+
+static void remove_move_markers(Grid<Herbivore>& herbivores)
+{
+    for (size_t x = 0; x < herbivores.get_width(); ++x) {
+        for (size_t y = 0; y < herbivores.get_height(); ++y) {
+            herbivores.at(x, y).moved = false;
+        }
+    }
+}
+
+static void move_herbivores(Grid<Herbivore>& herbivores, Grid<float>& plants)
+{
+    for (size_t x = 0; x < herbivores.get_width(); ++x) {
+        for (size_t y = 0; y < herbivores.get_height(); ++y) {
+            Herbivore& here = herbivores.at(x, y);
+            if (here.food > 0. && !here.moved) {
+                size_t around[4][2]
+                    = { { 1, 0 }, { 0, 1 }, { -1, 0 }, { 0, -1 } };
+                int idx = -1;
+                float max = 0.;
+                for (int i = 0; i < 4; ++i) {
+                    size_t there_x = x;
+                    size_t there_y = y;
+                    herbivores.small_trans(
+                        there_x, there_y, around[i][0], around[i][1]);
+                    if (herbivores.at(there_x, there_y).food <= 0.
+                        && plants.at(there_x, there_y) > max) {
+                        idx = i;
+                        max = plants.at(there_x, there_y);
+                    }
+                }
+                if (idx >= 0) {
+                    Herbivore& to = herbivores.at_small_trans(
+                        x, y, around[idx][0], around[idx][1]);
+                    if (here.food < 10.) {
+                        to.food = here.food;
+                        here.food = 0.;
+                    } else {
+                        here.food /= 5.;
+                        to.food = here.food;
+                        here.moved = true;
+                    }
+                    to.moved = true;
+                }
+            }
+        }
+    }
+}
+
 void World::simulate()
 {
     Grid<float> next(get_width(), get_height());
@@ -133,6 +196,9 @@ void World::simulate()
     precipitate(clouds, water);
     cool_down(temperature);
     produce_body_heat(plants, temperature);
+    eat_plants(herbivores, plants);
+    remove_move_markers(herbivores);
+    move_herbivores(herbivores, plants);
 }
 
 static unsigned char amount2color(float amount)
@@ -158,11 +224,14 @@ void World::draw(SDL_Renderer* renderer)
                 amount2color(temperature.at(x, y) * 2.),
                 amount2color(plants.at(x, y) * 3.),
                 amount2color(water.at(x, y) * 2.), 255);
-#if 0
-            SDL_SetRenderDrawColor(renderer, amount2color(temperature.at(x, y) * 2.),
-                amount2color(clouds.at(x, y) * 3.), amount2color(water.at(x, y) * 3.),
-                255);
-#endif
+            if (herbivores.at(x, y).food > 0.) {
+                tile.x += 1;
+                tile.y += 1;
+                tile.w -= 2;
+                tile.h -= 2;
+                SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+                SDL_RenderFillRect(renderer, &tile);
+            }
             SDL_RenderFillRect(renderer, &tile);
         }
     }
