@@ -22,7 +22,7 @@ int main()
         printf("SDL initialization failed; %s\n", SDL_GetError());
         goto error_sdl_init;
     }
-    window = SDL_CreateWindow("Grid", SDL_WINDOWPOS_CENTERED,
+    window = SDL_CreateWindow("Intergrid", SDL_WINDOWPOS_CENTERED,
         SDL_WINDOWPOS_CENTERED, 800, 600, SDL_WINDOW_SHOWN);
     if (!window) {
         printf("SDL window creation failed; %s\n", SDL_GetError());
