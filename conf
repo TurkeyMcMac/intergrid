@@ -1,3 +1,9 @@
+## Simulation configuration parameters ##
+
+# The following parameter values are also the defaults if the parameters are
+# left unset. In other worlds, loading this configuration is the same as loading
+# an empty configuration file.
+
 # The fraction of the difference between two adjacent cloud tiles that is
 # mitigated by the flow between the two in one turn:
 clouds_dispersal = 0.1
