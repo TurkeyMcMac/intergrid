@@ -2,6 +2,7 @@
 #include <ctype.h>
 #include <fstream>
 #include <stddef.h>
+#include <stdlib.h>
 #include <string>
 
 int Config::parse(const char* path)
