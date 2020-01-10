@@ -34,23 +34,20 @@ void World::randomize(Config& conf)
 
 static float flow(float a, float b, float portion) { return (b - a) * portion; }
 
-static void disperse(Grid<float>& grid, float portion, Grid<float>& next)
+static void disperse(Grid<float>& grid, float portion)
 {
+    // This flow is not completely symmetrical, but it's good enough.
     for (size_t x = 0; x < grid.get_width(); ++x) {
         for (size_t y = 0; y < grid.get_height(); ++y) {
-            float& here = next.at(x, y);
-            float& right = next.at_small_trans(x, y, 1, 0);
-            float& below = next.at_small_trans(x, y, 0, 1);
-            here = grid.at(x, y);
-            right = grid.at_small_trans(x, y, 1, 0);
-            below = grid.at_small_trans(x, y, 0, 1);
+            float& here = grid.at(x, y);
+            float& right = grid.at_small_trans(x, y, 1, 0);
+            float& below = grid.at_small_trans(x, y, 0, 1);
             float flow_right = flow(here, right, portion);
             float flow_below = flow(here, below, portion);
             here += flow_right;
             right -= flow_right;
             here += flow_below;
             below -= flow_below;
-            grid.at(x, y) = here;
         }
     }
 }
@@ -195,11 +192,10 @@ static void move_herbivores(
 
 void World::simulate(Config& conf)
 {
-    Grid<float> next(get_width(), get_height());
-    disperse(temperature, conf.temperature_dispersal, next);
-    disperse(plants, conf.plants_dispersal, next);
-    disperse(water, conf.water_dispersal, next);
-    disperse(clouds, conf.clouds_dispersal, next);
+    disperse(temperature, conf.temperature_dispersal);
+    disperse(plants, conf.plants_dispersal);
+    disperse(water, conf.water_dispersal);
+    disperse(clouds, conf.clouds_dispersal);
     breed_plants(plants, temperature, water, clouds, conf);
     vaporize(temperature, plants, water, clouds, conf);
     precipitate(clouds, water, conf);
