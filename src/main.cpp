@@ -12,7 +12,7 @@ int main()
     SDL_Event event;
     Config conf;
     World world(80, 60);
-    if (conf.parse("grid.conf") < 0) {
+    if (conf.parse("conf") < 0) {
         fputs("Unable to parse configuration\n", stderr);
         goto error_config;
     }
