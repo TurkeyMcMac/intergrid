@@ -12,7 +12,7 @@ int main()
     SDL_Event event;
     Config conf;
     conf.parse("grid.conf");
-    World world(100, 60);
+    World world(80, 60);
     srand(time(NULL));
     world.randomize(conf);
     if (SDL_Init(SDL_INIT_VIDEO)) {
@@ -20,7 +20,7 @@ int main()
         goto error_sdl_init;
     }
     window = SDL_CreateWindow("Grid", SDL_WINDOWPOS_CENTERED,
-        SDL_WINDOWPOS_CENTERED, 600, 360, SDL_WINDOW_SHOWN);
+        SDL_WINDOWPOS_CENTERED, 800, 600, SDL_WINDOW_SHOWN);
     if (!window) {
         printf("SDL window creation failed; %s\n", SDL_GetError());
         goto error_create_window;
