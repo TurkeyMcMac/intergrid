@@ -1,4 +1,4 @@
-exe = grid
+exe = intergrid
 sources = $(wildcard src/*.cpp)
 headers = $(wildcard src/*.hpp)
 
