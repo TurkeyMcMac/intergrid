@@ -40,7 +40,7 @@ int main()
         world.simulate(conf);
         Uint32 new_ticks = SDL_GetTicks();
         if (new_ticks - ticks < 100) {
-            // SDL_Delay(100 - (new_ticks - ticks));
+            SDL_Delay(100 - (new_ticks - ticks));
         }
     }
     status = EXIT_SUCCESS;
