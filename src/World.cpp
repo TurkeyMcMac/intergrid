@@ -161,8 +161,7 @@ static void move_herbivores(
         for (size_t y = 0; y < herbivores.get_height(); ++y) {
             Herbivore& here = herbivores.at(x, y);
             if (here.food > 0. && !here.moved) {
-                size_t around[4][2]
-                    = { { 1, 0 }, { 0, 1 }, { -1, 0 }, { 0, -1 } };
+                int around[4][2] = { { 1, 0 }, { 0, 1 }, { -1, 0 }, { 0, -1 } };
                 int idx = -1;
                 float max = 0.;
                 for (int i = 0; i < 4; ++i) {
