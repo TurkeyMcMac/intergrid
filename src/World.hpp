@@ -1,6 +1,7 @@
 #ifndef WORLD_H_
 #define WORLD_H_
 
+#include "Config.hpp"
 #include "Grid.hpp"
 #include <SDL2/SDL.h>
 
@@ -17,9 +18,9 @@ public:
 
     size_t get_height();
 
-    void randomize();
+    void randomize(Config& conf);
 
-    void simulate();
+    void simulate(Config& conf);
 
     void draw(SDL_Renderer* renderer);
 

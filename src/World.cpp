@@ -15,16 +15,19 @@ size_t World::get_height() { return temperature.get_height(); }
 
 static float random_float() { return (float)rand() / RAND_MAX; }
 
-void World::randomize()
+void World::randomize(Config& conf)
 {
     for (size_t x = 0; x < get_width(); ++x) {
         for (size_t y = 0; y < get_height(); ++y) {
-            plants.at(x, y) = random_float() * 10.;
-            temperature.at(x, y) = random_float() * 10.;
-            water.at(x, y) = random_float() * 10.;
-            clouds.at(x, y) = random_float() * 10.;
+            plants.at(x, y) = random_float() * conf.plants_initial_max;
+            temperature.at(x, y)
+                = random_float() * conf.temperature_initial_max;
+            water.at(x, y) = random_float() * conf.water_initial_max;
+            clouds.at(x, y) = random_float() * conf.clouds_initial_max;
             herbivores.at(x, y).food
-                = rand() / (RAND_MAX / 100) == 0 ? 10. : 0.;
+                = rand() / (int)(RAND_MAX * conf.herbivores_initial_chance) == 0
+                ? conf.herbivores_initial_food
+                : 0.;
         }
     }
 }
@@ -53,38 +56,40 @@ static void disperse(Grid<float>& grid, float portion, Grid<float>& next)
 }
 
 static void breed_plants(Grid<float>& plants, Grid<float>& temperature,
-    Grid<float>& water, Grid<float>& clouds)
+    Grid<float>& water, Grid<float>& clouds, Config& conf)
 {
     for (size_t x = 0; x < plants.get_width(); ++x) {
         for (size_t y = 0; y < plants.get_height(); ++y) {
             float& here = plants.at(x, y);
             float mul = 1.;
             if (water.at(x, y) < here) {
-                mul *= 0.93;
+                mul *= conf.plants_water_lack_mul;
             }
             if (temperature.at(x, y) > here) {
-                mul *= 1.06;
+                mul *= conf.plants_temperature_excess_mul;
             } else {
-                mul *= 0.99;
+                mul *= conf.plants_temperature_lack_mul;
             }
             if (plants.at_small_trans(x, y, 1, 0) > here
                 && plants.at_small_trans(x, y, 0, 1) > here
                 && plants.at_small_trans(x, y, -1, 0) > here
                 && plants.at_small_trans(x, y, 0, -1) > here) {
-                mul *= 0.9;
+                mul *= conf.plants_overpopulation_mul;
             }
-            mul -= clouds.at(x, y) / 1000.;
+            mul -= clouds.at(x, y) * conf.plants_overcast_mul;
             here *= mul;
         }
     }
 }
 
 static void vaporize(Grid<float>& temperature, Grid<float>& plants,
-    Grid<float>& water, Grid<float>& clouds)
+    Grid<float>& water, Grid<float>& clouds, Config& conf)
 {
     for (size_t x = 0; x < temperature.get_width(); ++x) {
         for (size_t y = 0; y < temperature.get_height(); ++y) {
-            float vapor = temperature.at(x, y) / 100. + plants.at(x, y) / 100.;
+            float vapor
+                = temperature.at(x, y) * conf.water_evaporation_temperature_mul
+                + plants.at(x, y) * conf.water_evaporation_plants_mul;
             if (water.at(x, y) < vapor) {
                 vapor = water.at(x, y);
             }
@@ -94,43 +99,47 @@ static void vaporize(Grid<float>& temperature, Grid<float>& plants,
     }
 }
 
-static void precipitate(Grid<float>& clouds, Grid<float>& water)
+static void precipitate(Grid<float>& clouds, Grid<float>& water, Config& conf)
 {
     for (size_t x = 0; x < clouds.get_width(); ++x) {
         for (size_t y = 0; y < clouds.get_height(); ++y) {
-            if (clouds.at(x, y) > 6.) {
-                clouds.at(x, y) -= 0.1;
-                water.at(x, y) += 0.1;
+            if (clouds.at(x, y) > conf.clouds_max_humidity) {
+                clouds.at(x, y) -= conf.clouds_humidity_decrement;
+                water.at(x, y) += conf.clouds_humidity_decrement;
             }
         }
     }
 }
 
-static void cool_down(Grid<float>& temperature)
+static void cool_down(Grid<float>& temperature, Config& conf)
 {
     for (size_t x = 0; x < temperature.get_width(); ++x) {
         for (size_t y = 0; y < temperature.get_height(); ++y) {
-            temperature.at(x, y) *= 0.99;
+            temperature.at(x, y) *= conf.temperature_loss_mul;
         }
     }
 }
 
-static void produce_body_heat(Grid<float>& plants, Grid<float>& temperature)
+static void produce_body_heat(
+    Grid<float>& plants, Grid<float>& temperature, Config& conf)
 {
     for (size_t x = 0; x < plants.get_width(); ++x) {
         for (size_t y = 0; y < plants.get_height(); ++y) {
-            temperature.at(x, y) += plants.at(x, y) / 50.;
+            temperature.at(x, y) += plants.at(x, y) * conf.plants_body_heat_mul;
         }
     }
 }
 
-static void eat_plants(Grid<Herbivore>& herbivores, Grid<float>& plants)
+static void eat_plants(
+    Grid<Herbivore>& herbivores, Grid<float>& plants, Config& conf)
 {
     for (size_t x = 0; x < herbivores.get_width(); ++x) {
         for (size_t y = 0; y < herbivores.get_height(); ++y) {
             if (herbivores.at(x, y).food > 0.) {
-                herbivores.at(x, y).food += plants.at(x, y) * 0.1 - 0.2;
-                plants.at(x, y) = 0;
+                herbivores.at(x, y).food
+                    += plants.at(x, y) * conf.herbivores_plant_food_mul
+                    - conf.herbivores_food_decrement;
+                plants.at(x, y) = 0.;
             }
         }
     }
@@ -145,7 +154,8 @@ static void remove_move_markers(Grid<Herbivore>& herbivores)
     }
 }
 
-static void move_herbivores(Grid<Herbivore>& herbivores, Grid<float>& plants)
+static void move_herbivores(
+    Grid<Herbivore>& herbivores, Grid<float>& plants, Config& conf)
 {
     for (size_t x = 0; x < herbivores.get_width(); ++x) {
         for (size_t y = 0; y < herbivores.get_height(); ++y) {
@@ -169,11 +179,11 @@ static void move_herbivores(Grid<Herbivore>& herbivores, Grid<float>& plants)
                 if (idx >= 0) {
                     Herbivore& to = herbivores.at_small_trans(
                         x, y, around[idx][0], around[idx][1]);
-                    if (here.food < 10.) {
+                    if (here.food < conf.herbivores_baby_threshold) {
                         to.food = here.food;
                         here.food = 0.;
                     } else {
-                        here.food /= 5.;
+                        here.food *= conf.herbivores_birth_food_mul;
                         to.food = here.food;
                         here.moved = true;
                     }
@@ -184,21 +194,21 @@ static void move_herbivores(Grid<Herbivore>& herbivores, Grid<float>& plants)
     }
 }
 
-void World::simulate()
+void World::simulate(Config& conf)
 {
     Grid<float> next(get_width(), get_height());
-    disperse(temperature, 0.15, next);
-    disperse(plants, 0.02, next);
-    disperse(water, 0.02, next);
-    disperse(clouds, 0.1, next);
-    breed_plants(plants, temperature, water, clouds);
-    vaporize(temperature, plants, water, clouds);
-    precipitate(clouds, water);
-    cool_down(temperature);
-    produce_body_heat(plants, temperature);
-    eat_plants(herbivores, plants);
+    disperse(temperature, conf.temperature_dispersal, next);
+    disperse(plants, conf.plants_dispersal, next);
+    disperse(water, conf.water_dispersal, next);
+    disperse(clouds, conf.clouds_dispersal, next);
+    breed_plants(plants, temperature, water, clouds, conf);
+    vaporize(temperature, plants, water, clouds, conf);
+    precipitate(clouds, water, conf);
+    cool_down(temperature, conf);
+    produce_body_heat(plants, temperature, conf);
+    eat_plants(herbivores, plants, conf);
     remove_move_markers(herbivores);
-    move_herbivores(herbivores, plants);
+    move_herbivores(herbivores, plants, conf);
 }
 
 static unsigned char amount2color(float amount)

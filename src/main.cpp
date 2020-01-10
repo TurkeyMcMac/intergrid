@@ -1,3 +1,4 @@
+#include "Config.hpp"
 #include "World.hpp"
 #include <stdio.h>
 #include <stdlib.h>
@@ -9,15 +10,17 @@ int main()
     SDL_Window* window;
     SDL_Renderer* renderer;
     SDL_Event event;
-    World world(80, 60);
+    Config conf;
+    conf.parse("grid.conf");
+    World world(100, 60);
     srand(time(NULL));
-    world.randomize();
+    world.randomize(conf);
     if (SDL_Init(SDL_INIT_VIDEO)) {
         printf("SDL initialization failed; %s\n", SDL_GetError());
         goto error_sdl_init;
     }
     window = SDL_CreateWindow("Grid", SDL_WINDOWPOS_CENTERED,
-        SDL_WINDOWPOS_CENTERED, 800, 600, SDL_WINDOW_SHOWN);
+        SDL_WINDOWPOS_CENTERED, 600, 360, SDL_WINDOW_SHOWN);
     if (!window) {
         printf("SDL window creation failed; %s\n", SDL_GetError());
         goto error_create_window;
@@ -34,7 +37,7 @@ int main()
         }
         world.draw(renderer);
         SDL_RenderPresent(renderer);
-        world.simulate();
+        world.simulate(conf);
         Uint32 new_ticks = SDL_GetTicks();
         if (new_ticks - ticks < 100) {
             // SDL_Delay(100 - (new_ticks - ticks));
