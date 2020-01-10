@@ -11,8 +11,11 @@ int main()
     SDL_Renderer* renderer;
     SDL_Event event;
     Config conf;
-    conf.parse("grid.conf");
     World world(80, 60);
+    if (conf.parse("grid.conf") < 0) {
+        fputs("Unable to parse configuration\n", stderr);
+        goto error_config;
+    }
     srand(time(NULL));
     world.randomize(conf);
     if (SDL_Init(SDL_INIT_VIDEO)) {
@@ -50,5 +53,6 @@ error_create_surface:
 error_create_window:
     SDL_Quit();
 error_sdl_init:
+error_config:
     exit(status);
 }
