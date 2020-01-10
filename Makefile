@@ -1,6 +1,6 @@
 exe = intergrid
-sources = $(wildcard src/*.cpp)
-headers = $(wildcard src/*.hpp)
+sources = src/*.cpp
+headers = src/*.hpp
 
 $(exe): $(sources) $(headers)
 	c++ -std=c++03 -pedantic -Wall -Wextra $(CXXFLAGS) -o $@ $(sources) -lSDL2
