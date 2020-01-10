@@ -108,7 +108,6 @@ static bool set_option(Config& conf, std::string& key, float val)
 
 int Config::parse(const char* path)
 {
-    // XXX: This parser is bad!
     std::string line;
     std::ifstream file;
     file.open(path, std::ifstream::in);
