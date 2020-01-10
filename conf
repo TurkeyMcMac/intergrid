@@ -1,0 +1,60 @@
+# The fraction of the difference between two adjacent cloud tiles that is
+# mitigated by the flow between the two in one turn:
+clouds_dispersal = 0.1
+# The clouds per turn that precipitates into water if the clouds on the tile are
+# above clouds_max_humidity:
+clouds_humidity_decrement = 0.1
+# The initial amount of clouds on a tile is from zero to this number, inclusive:
+clouds_initial_max = 10.
+# If this level is exceeded on a tile, precipitation starts (see
+# clouds_humidity_decrement):
+clouds_max_humidity = 6.
+# The chance that a tile starts with an herbivore on it:
+herbivores_initial_chance = 0.01
+# The amount of food herbivores begin with:
+herbivores_initial_food = 10.
+# The fraction of plants eaten an herbivore converts to food:
+herbivores_plant_food_mul = 0.1
+# The amount of food an herbivore loses per turn:
+herbivores_food_decrement = 0.2
+# The amount of food an herbivore needs to asexually reproduce:
+herbivores_baby_threshold = 10.
+# The multiplier of the herbivore parent's food that is given to the baby and to
+# which the parent's food level is set:
+herbivores_birth_food_mul = 0.2
+# The temperature increase one unit of plants produces per turn:
+plants_body_heat_mul = 0.02
+# Like clouds_dispersal, but for plants:
+plants_dispersal = 0.02
+# Like clouds_initial_max, but for plants:
+plants_initial_max = 10.
+# What a the plant level on a tile is multiplied by if all four adjacent plant
+# levels are greater than it:
+plants_overpopulation_mul = 0.9
+# What a plant level is multiplied by for every unit of clouds on its tile:
+plants_overcast_mul = 0.001
+# What a plant level is multiplied by if the temperature on the tile is greater
+# than the plant level:
+plants_temperature_excess_mul = 1.06
+# What a plant level is multiplied by if the temperature on the tile is less
+# than the plant level:
+plants_temperature_lack_mul = 0.99
+# What a plant level is multiplied by if the water on the tile is less than the
+# plant level:
+plants_water_lack_mul = 0.93
+# Like clouds_dispersal, but for temperature:
+temperature_dispersal = 0.15
+# Like clouds_initial_max, but for temperature:
+temperature_initial_max = 10.
+# Multiplied by temperature on every tile every turn:
+temperature_loss_mul = 0.99
+# Like clouds_dispersal, but for water:
+water_dispersal = 0.02
+# Like clouds_initial_max, but for water:
+water_initial_max = 10.
+# What the temperature on a tile is multiplied by to then be subtracted from the
+# water level and added to the clouds:
+water_evaporation_temperature_mul = 0.01
+# Like water_evaporation_temperature_mul, but for plants (plants cause
+# evaporation):
+water_evaporation_plants_mul = 0.01
