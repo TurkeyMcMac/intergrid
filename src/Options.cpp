@@ -43,12 +43,43 @@ static void print_usage(char* progname, FILE* to)
 static void print_help(char* progname)
 {
     print_usage(progname, stdout);
-    printf("%s help placeholder\n", progname);
+    puts("\
+Options:\n\
+ -conf <path>            Load the simulation configuration at <path>. The\n\
+                         format is not described here.\n\
+ -conf-str <conf>        Load configuration from the given sttring <conf>.\n\
+ -draw                   Open a window and draw the world every frame.\n\
+                         This is the default.\n\
+ -no-draw                Do not open a window or draw the world.\n\
+ -print-stats            Print statistics to stdout in the following order:\n\
+                          1. Simulation tick.\n\
+                          2. Sum of all tile temperatures.\n\
+                          3. Sum of all tile plant levels.\n\
+                          4. Sum of all tile water levels.\n\
+                          5. Sum of all tile cloud levels.\n\
+                          6. Number of herbivores alive.\n\
+                          7. Sum of the food in all herbivore stomachs.\n\
+                         All numbers are printed on one line.\n\
+ -no-print-stats         Do not print statistics. This is the default.\n\
+ -frame-delay <delay>    Delay for <delay> milliseconds per frame.\n\
+ -screen-width <width>   Draw the screen <width> screen pixels wide.\n\
+ -screen-height <height> Draw the screen <height> screen pixels tall.\n\
+ -pixel-size <size>      Set the simulation pixel width and height. Pixel\n\
+                         size is only effected if world_width/world_height is\n\
+                         set to 0 in configuration, so that world_width/\n\
+                         world_height is automatically decided.\n\
+ -pixel-width <width>    Set the simulation pixel width.\n\
+ -pixel-height <width>   Set the simulation pixel height.\n\
+ -fullscreen             Draw the world over the entire screen.\n\
+ -no-fullscreen          Draw the world on part of the screen.\n\
+                         This is the default.\n\
+ -help                   Print this help information.\n\
+ -version                Print version information.");
 }
 
 static void print_version(char* progname)
 {
-    printf("%s version placeholder\n", progname);
+    printf("%s version 0.1.0\n", progname);
 }
 
 Options::Options(int argc, char* argv[])
