@@ -36,8 +36,10 @@ static void simulate(Options& opts, SDL_Renderer* renderer)
     world.randomize(conf);
     for (;;) {
         Uint32 ticks = SDL_GetTicks();
-        if (SDL_PollEvent(&event) && is_quit_event(event)) {
-            break;
+        while (SDL_PollEvent(&event)) {
+            if (is_quit_event(event)) {
+                return;
+            }
         }
         if (opts.draw) {
             world.draw(renderer);
