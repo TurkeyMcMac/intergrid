@@ -96,7 +96,9 @@ Options::Options(int argc, char* argv[])
             // "--" ends option parsing.
             break;
         } else {
+			fprintf(stderr, "%s: Invalid option: %s\n", progname, argv[i]);
             print_usage(progname, stderr);
+			fprintf(stderr, "Type %s -help for more information\n", progname);
             exit(EXIT_FAILURE);
         }
     }
