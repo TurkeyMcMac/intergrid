@@ -3,7 +3,7 @@ sources = src/*.cpp
 headers = src/*.hpp
 
 $(exe): $(sources) $(headers)
-	$(CXX) -std=c++03 -pedantic -Wall -Wextra -D_REENTRANT $(CXXFLAGS) -o $@ $(sources) -lSDL2
+	$(CXX) -std=c++98 -pedantic -Wall -Wextra -D_REENTRANT $(CXXFLAGS) -o $@ $(sources) -lSDL2
 
 .PHONY: fmt
 fmt:

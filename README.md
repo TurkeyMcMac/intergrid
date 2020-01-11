@@ -8,7 +8,7 @@ interacting in convoluted ways. That is the philosophy behind this project.
 
 ## Installation
 
-The dependencies of Intergrid are a C++03 compiler and standard library and the
+The dependencies of Intergrid are a C++98 compiler and standard library and the
 SDL2 library. To compile, run this:
 
 ```
