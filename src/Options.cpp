@@ -81,7 +81,7 @@ Options:\n\
 
 static void print_version(char* progname)
 {
-    printf("%s version 0.2.0\n", progname);
+    printf("%s version 0.2.1\n", progname);
 }
 
 Options::Options(int argc, char* argv[])
@@ -127,7 +127,6 @@ Options::Options(int argc, char* argv[])
             print_stats = false;
         } else if (!strcmp(opt, "-tick-limit")) {
             tick_limit = get_num_arg(argv, i, LONG_MIN, LONG_MAX);
-            print_stats = false;
         } else if (!strcmp(opt, "-frame-delay")) {
             frame_delay = (unsigned)get_num_arg(argv, i, 0, 2000000000);
         } else if (!strcmp(opt, "-screen-width")) {
