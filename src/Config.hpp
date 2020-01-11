@@ -10,6 +10,8 @@ public:
 
     int parse(const char* path);
 
+    int parse_cstr(const char* cstr);
+
     float clouds_dispersal;
     float clouds_humidity_decrement;
     float clouds_initial_max;

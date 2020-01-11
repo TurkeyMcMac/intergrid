@@ -73,6 +73,14 @@ Options::Options(int argc, char* argv[])
                     progname, file);
                 exit(EXIT_FAILURE);
             }
+        } else if (!strcmp(opt, "-conf-str")) {
+            char* str = get_arg(argv, i);
+            if (conf.parse_cstr(str) < 0) {
+                fprintf(stderr,
+                    "%s: Unable to parse configuration string '%s'\n", progname,
+                    str);
+                exit(EXIT_FAILURE);
+            }
         } else if (!strcmp(opt, "-draw")) {
             draw = true;
         } else if (!strcmp(opt, "-no-draw")) {

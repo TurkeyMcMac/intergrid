@@ -1,6 +1,7 @@
 #include "Config.hpp"
 #include <ctype.h>
 #include <fstream>
+#include <sstream>
 #include <stddef.h>
 #include <stdlib.h>
 #include <string>
@@ -114,15 +115,9 @@ static bool set_option(Config& conf, std::string& key, float val)
     return true;
 }
 
-int Config::parse(const char* path)
+static int parse_istream(Config& conf, std::istream& file, const char* name)
 {
     std::string line;
-    std::ifstream file;
-    file.open(path, std::ifstream::in);
-    if (file.fail()) {
-        fprintf(stderr, "Failed to open configuration file '%s'\n", path);
-        return -1;
-    }
     for (std::getline(file, line); file.good(); std::getline(file, line)) {
         size_t i = skip_space(line, 0);
         if (i >= line.length()) {
@@ -153,14 +148,33 @@ int Config::parse(const char* path)
             return -1;
         }
         std::string key = line.substr(key_start, key_end - key_start);
-        if (!set_option(*this, key, val)) {
+        if (!set_option(conf, key, val)) {
             fprintf(stderr, "Unknown configuration option: %s\n", key.c_str());
             return -1;
         }
     }
     if (file.fail() && !file.eof()) {
-        fprintf(stderr, "Failed while reading configuration file '%s'\n", path);
+        fprintf(stderr, "Failed while reading configuration file '%s'\n", name);
         return -1;
     }
     return 0;
+}
+
+int Config::parse(const char* path)
+{
+    std::ifstream file;
+    file.open(path, std::ifstream::in);
+    if (file.fail()) {
+        fprintf(stderr, "Failed to open configuration file '%s'\n", path);
+        return -1;
+    }
+    return parse_istream(*this, file, path);
+}
+
+int Config::parse_cstr(const char* cstr)
+{
+    std::string str(cstr);
+    str.append("\n");
+    std::stringstream stream(str);
+    return parse_istream(*this, stream, "(string)");
 }
