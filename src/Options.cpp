@@ -97,6 +97,10 @@ Options::Options(int argc, char* argv[])
             screen_width = get_pos_num_arg(argv, i);
         } else if (!strcmp(opt, "-screen-height")) {
             screen_height = get_pos_num_arg(argv, i);
+        } else if (!strcmp(opt, "-pixel-size")) {
+			int size = get_pos_num_arg(argv, i);
+            pixel_width = size;
+            pixel_height = size;
         } else if (!strcmp(opt, "-pixel-width")) {
             pixel_width = get_pos_num_arg(argv, i);
         } else if (!strcmp(opt, "-pixel-height")) {
