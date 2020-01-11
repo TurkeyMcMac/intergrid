@@ -7,6 +7,12 @@
 
 using namespace intergrid;
 
+static bool is_quit_event(SDL_Event& event)
+{
+    return event.type == SDL_QUIT
+        || (event.type == SDL_KEYUP && event.key.keysym.sym == SDLK_q);
+}
+
 static void simulate(Options& opts, SDL_Renderer* renderer)
 {
     SDL_Event event;
@@ -30,7 +36,7 @@ static void simulate(Options& opts, SDL_Renderer* renderer)
     world.randomize(conf);
     for (;;) {
         Uint32 ticks = SDL_GetTicks();
-        if (SDL_PollEvent(&event) && event.type == SDL_QUIT) {
+        if (SDL_PollEvent(&event) && is_quit_event(event)) {
             break;
         }
         if (opts.draw) {
