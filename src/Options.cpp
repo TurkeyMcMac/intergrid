@@ -47,7 +47,7 @@ static void print_help(char* progname)
 Options:\n\
  -conf <path>            Load the simulation configuration at <path>. The\n\
                          format is not described here.\n\
- -conf-str <conf>        Load configuration from the given sttring <conf>.\n\
+ -conf-str <conf>        Load configuration from the given string <conf>.\n\
  -draw                   Open a window and draw the world every frame.\n\
                          This is the default.\n\
  -no-draw                Do not open a window or draw the world.\n\
@@ -79,7 +79,7 @@ Options:\n\
 
 static void print_version(char* progname)
 {
-    printf("%s version 0.1.0\n", progname);
+    printf("%s version 0.1.1\n", progname);
 }
 
 Options::Options(int argc, char* argv[])
