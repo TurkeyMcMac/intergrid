@@ -7,7 +7,8 @@ World::World(size_t width, size_t height)
     , plants(width, height)
     , water(width, height)
     , clouds(width, height)
-    , herbivores(width, height)
+    , herbivores_food(width, height)
+    , herbivores_moved(width, height)
 {
 }
 
@@ -26,7 +27,7 @@ void World::randomize(Config& conf)
                 = random_float() * conf.temperature_initial_max;
             water.at(x, y) = random_float() * conf.water_initial_max;
             clouds.at(x, y) = random_float() * conf.clouds_initial_max;
-            herbivores.at(x, y).food
+            herbivores_food.at(x, y)
                 = rand() / (int)(RAND_MAX * conf.herbivores_initial_chance) == 0
                 ? conf.herbivores_initial_food
                 : 0.;
@@ -130,12 +131,12 @@ static void produce_body_heat(
 }
 
 static void eat_plants(
-    Grid<Herbivore>& herbivores, Grid<float>& plants, Config& conf)
+    Grid<float>& herbivores_food, Grid<float>& plants, Config& conf)
 {
-    for (size_t x = 0; x < herbivores.get_width(); ++x) {
-        for (size_t y = 0; y < herbivores.get_height(); ++y) {
-            if (herbivores.at(x, y).food > 0.) {
-                herbivores.at(x, y).food
+    for (size_t x = 0; x < herbivores_food.get_width(); ++x) {
+        for (size_t y = 0; y < herbivores_food.get_height(); ++y) {
+            if (herbivores_food.at(x, y) > 0.) {
+                herbivores_food.at(x, y)
                     += plants.at(x, y) * conf.herbivores_plant_food_mul
                     - conf.herbivores_food_decrement;
                 plants.at(x, y) = 0.;
@@ -144,48 +145,42 @@ static void eat_plants(
     }
 }
 
-static void remove_move_markers(Grid<Herbivore>& herbivores)
+static void move_herbivores(Grid<float>& herbivores_food,
+    Grid<bool>& herbivores_moved, Grid<float>& plants, Config& conf)
 {
-    for (size_t x = 0; x < herbivores.get_width(); ++x) {
-        for (size_t y = 0; y < herbivores.get_height(); ++y) {
-            herbivores.at(x, y).moved = false;
-        }
-    }
-}
-
-static void move_herbivores(
-    Grid<Herbivore>& herbivores, Grid<float>& plants, Config& conf)
-{
-    for (size_t x = 0; x < herbivores.get_width(); ++x) {
-        for (size_t y = 0; y < herbivores.get_height(); ++y) {
-            Herbivore& here = herbivores.at(x, y);
-            if (here.food > 0. && !here.moved) {
+    for (size_t x = 0; x < herbivores_food.get_width(); ++x) {
+        for (size_t y = 0; y < herbivores_food.get_height(); ++y) {
+            float& here = herbivores_food.at(x, y);
+            if (here > 0. && !herbivores_moved.at(x, y)) {
                 int around[4][2] = { { 1, 0 }, { 0, 1 }, { -1, 0 }, { 0, -1 } };
                 int idx = -1;
                 float max = 0.;
                 for (int i = 0; i < 4; ++i) {
                     size_t there_x = x;
                     size_t there_y = y;
-                    herbivores.small_trans(
+                    herbivores_food.small_trans(
                         there_x, there_y, around[i][0], around[i][1]);
-                    if (herbivores.at(there_x, there_y).food <= 0.
+                    if (herbivores_food.at(there_x, there_y) <= 0.
                         && plants.at(there_x, there_y) > max) {
                         idx = i;
                         max = plants.at(there_x, there_y);
                     }
                 }
                 if (idx >= 0) {
-                    Herbivore& to = herbivores.at_small_trans(
-                        x, y, around[idx][0], around[idx][1]);
-                    if (here.food < conf.herbivores_baby_threshold) {
-                        to.food = here.food;
-                        here.food = 0.;
+                    size_t tx = x;
+                    size_t ty = y;
+                    herbivores_food.small_trans(
+                        tx, ty, around[idx][0], around[idx][1]);
+                    float& to = herbivores_food.at(tx, ty);
+                    if (here < conf.herbivores_baby_threshold) {
+                        to = here;
+                        here = 0.;
                     } else {
-                        here.food *= conf.herbivores_birth_food_mul;
-                        to.food = here.food;
-                        here.moved = true;
+                        here *= conf.herbivores_birth_food_mul;
+                        to = here;
+                        herbivores_moved.at(x, y) = true;
                     }
-                    to.moved = true;
+                    herbivores_moved.at(tx, ty) = true;
                 }
             }
         }
@@ -203,9 +198,9 @@ void World::simulate(Config& conf)
     precipitate(clouds, water, conf);
     cool_down(temperature, conf);
     produce_body_heat(plants, temperature, conf);
-    eat_plants(herbivores, plants, conf);
-    remove_move_markers(herbivores);
-    move_herbivores(herbivores, plants, conf);
+    eat_plants(herbivores_food, plants, conf);
+    herbivores_moved.fill(false);
+    move_herbivores(herbivores_food, herbivores_moved, plants, conf);
 }
 
 static unsigned char amount2color(float amount)
@@ -237,7 +232,7 @@ void World::draw(SDL_Renderer* renderer)
                 amount2color(temperature.at(x, y) * 2.),
                 amount2color(plants.at(x, y) * 3.),
                 amount2color(water.at(x, y) * 2.), 255);
-            if (herbivores.at(x, y).food > 0.) {
+            if (herbivores_food.at(x, y) > 0.) {
                 tile.x += 1;
                 tile.y += 1;
                 tile.w -= 2;
@@ -297,9 +292,9 @@ double World::count_total_clouds()
 long World::count_total_herbivores()
 {
     long total = 0;
-    for (size_t x = 0; x < herbivores.get_width(); ++x) {
-        for (size_t y = 0; y < herbivores.get_height(); ++y) {
-            total += herbivores.at(x, y).food > 0.;
+    for (size_t x = 0; x < herbivores_food.get_width(); ++x) {
+        for (size_t y = 0; y < herbivores_food.get_height(); ++y) {
+            total += herbivores_food.at(x, y) > 0.;
         }
     }
     return total;
@@ -308,9 +303,9 @@ long World::count_total_herbivores()
 double World::count_total_herbivore_food()
 {
     double total = 0.;
-    for (size_t x = 0; x < herbivores.get_width(); ++x) {
-        for (size_t y = 0; y < herbivores.get_height(); ++y) {
-            total += herbivores.at(x, y).food;
+    for (size_t x = 0; x < herbivores_food.get_width(); ++x) {
+        for (size_t y = 0; y < herbivores_food.get_height(); ++y) {
+            total += herbivores_food.at(x, y);
         }
     }
     return total;

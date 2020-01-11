@@ -7,11 +7,6 @@
 
 namespace intergrid {
 
-struct Herbivore {
-    float food;
-    bool moved;
-};
-
 class World {
 public:
     World(size_t width, size_t height);
@@ -43,7 +38,8 @@ private:
     Grid<float> plants;
     Grid<float> water;
     Grid<float> clouds;
-    Grid<Herbivore> herbivores;
+    Grid<float> herbivores_food;
+    Grid<bool> herbivores_moved;
 };
 
 } /* namespace intergrid */

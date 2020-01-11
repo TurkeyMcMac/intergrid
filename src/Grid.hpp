@@ -79,6 +79,13 @@ public:
         return at(x, y);
     }
 
+    void fill(T with)
+    {
+        for (size_t i = 0; i < width * height; ++i) {
+            tiles[i] = with;
+        }
+    }
+
     size_t get_width() { return width; }
 
     size_t get_height() { return height; }
