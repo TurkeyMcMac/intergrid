@@ -24,6 +24,18 @@ public:
 
     void draw(SDL_Renderer* renderer);
 
+    double count_total_temperature();
+
+    double count_total_plants();
+
+    double count_total_water();
+
+    double count_total_clouds();
+
+    long count_total_herbivores();
+
+    double count_total_herbivore_food();
+
 private:
     Grid<float> temperature;
     Grid<float> plants;

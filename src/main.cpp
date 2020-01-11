@@ -7,6 +7,7 @@
 int main()
 {
     int status = EXIT_FAILURE;
+    unsigned long sim_tick;
     SDL_Window* window;
     SDL_Renderer* renderer;
     SDL_Event event;
@@ -33,6 +34,7 @@ int main()
         printf("SDL renderer creation failed; %s\n", SDL_GetError());
         goto error_create_surface;
     }
+    sim_tick = 0;
     for (;;) {
         Uint32 ticks = SDL_GetTicks();
         if (SDL_PollEvent(&event) && event.type == SDL_QUIT) {
@@ -41,6 +43,12 @@ int main()
         world.draw(renderer);
         SDL_RenderPresent(renderer);
         world.simulate(conf);
+        ++sim_tick;
+        printf("%lu %f %f %f %f %ld %f\n", sim_tick,
+            world.count_total_temperature(), world.count_total_plants(),
+            world.count_total_water(), world.count_total_clouds(),
+            world.count_total_herbivores(), world.count_total_herbivore_food());
+        fflush(stdout);
         Uint32 new_ticks = SDL_GetTicks();
         if (new_ticks - ticks < 100) {
             SDL_Delay(100 - (new_ticks - ticks));

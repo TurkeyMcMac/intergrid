@@ -241,3 +241,69 @@ void World::draw(SDL_Renderer* renderer)
         }
     }
 }
+
+double World::count_total_temperature()
+{
+    double total = 0.;
+    for (size_t x = 0; x < temperature.get_width(); ++x) {
+        for (size_t y = 0; y < temperature.get_height(); ++y) {
+            total += temperature.at(x, y);
+        }
+    }
+    return total;
+}
+
+double World::count_total_plants()
+{
+    double total = 0.;
+    for (size_t x = 0; x < plants.get_width(); ++x) {
+        for (size_t y = 0; y < plants.get_height(); ++y) {
+            total += plants.at(x, y);
+        }
+    }
+    return total;
+}
+
+double World::count_total_water()
+{
+    double total = 0.;
+    for (size_t x = 0; x < water.get_width(); ++x) {
+        for (size_t y = 0; y < water.get_height(); ++y) {
+            total += water.at(x, y);
+        }
+    }
+    return total;
+}
+
+double World::count_total_clouds()
+{
+    double total = 0.;
+    for (size_t x = 0; x < clouds.get_width(); ++x) {
+        for (size_t y = 0; y < clouds.get_height(); ++y) {
+            total += clouds.at(x, y);
+        }
+    }
+    return total;
+}
+
+long World::count_total_herbivores()
+{
+    long total = 0;
+    for (size_t x = 0; x < herbivores.get_width(); ++x) {
+        for (size_t y = 0; y < herbivores.get_height(); ++y) {
+            total += herbivores.at(x, y).food > 0.;
+        }
+    }
+    return total;
+}
+
+double World::count_total_herbivore_food()
+{
+    double total = 0.;
+    for (size_t x = 0; x < herbivores.get_width(); ++x) {
+        for (size_t y = 0; y < herbivores.get_height(); ++y) {
+            total += herbivores.at(x, y).food;
+        }
+    }
+    return total;
+}
