@@ -79,7 +79,7 @@ Options:\n\
 
 static void print_version(char* progname)
 {
-    printf("%s version 0.1.1\n", progname);
+    printf("%s version 0.1.2\n", progname);
 }
 
 Options::Options(int argc, char* argv[])

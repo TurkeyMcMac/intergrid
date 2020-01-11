@@ -68,7 +68,11 @@ int main(int argc, char* argv[])
     SDL_Window* window = NULL;
     SDL_Renderer* renderer = NULL;
     Options opts(argc, argv);
-    if (SDL_Init(opts.draw ? SDL_INIT_VIDEO : 0)) {
+	Uint32 init_flags = SDL_INIT_TIMER | SDL_INIT_EVENTS;
+	if (opts.draw) {
+		init_flags |= SDL_INIT_VIDEO;
+	}
+    if (SDL_Init(init_flags)) {
         fprintf(stderr, "SDL initialization failed; %s\n", SDL_GetError());
         goto error_sdl_init;
     }
