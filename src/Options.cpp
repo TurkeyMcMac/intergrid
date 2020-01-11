@@ -27,7 +27,7 @@ static int get_pos_num_arg(char* argv[], int& i)
             argv[0], argv[i - 1], arg_string);
         exit(EXIT_FAILURE);
     }
-    if (arg_long < 0 || arg_long > INT_MAX) {
+    if (arg_long <= 0 || arg_long > INT_MAX) {
         fprintf(stderr, "%s: Numeric argument to option %s out of range: %s\n",
             argv[0], argv[i - 1], arg_string);
         exit(EXIT_FAILURE);
@@ -58,6 +58,8 @@ Options::Options(int argc, char* argv[])
     , frame_delay(100)
     , screen_width(800)
     , screen_height(600)
+    , pixel_width(10)
+    , pixel_height(10)
     , fullscreen(false)
 {
     char* progname = argv[0];
@@ -95,6 +97,10 @@ Options::Options(int argc, char* argv[])
             screen_width = get_pos_num_arg(argv, i);
         } else if (!strcmp(opt, "-screen-height")) {
             screen_height = get_pos_num_arg(argv, i);
+        } else if (!strcmp(opt, "-pixel-width")) {
+            pixel_width = get_pos_num_arg(argv, i);
+        } else if (!strcmp(opt, "-pixel-height")) {
+            pixel_height = get_pos_num_arg(argv, i);
         } else if (!strcmp(opt, "-fullscreen")) {
             fullscreen = true;
         } else if (!strcmp(opt, "-no-fullscreen")) {

@@ -15,6 +15,8 @@ public:
     unsigned frame_delay;
     int screen_width;
     int screen_height;
+    int pixel_width;
+    int pixel_height;
     bool fullscreen;
 };
 

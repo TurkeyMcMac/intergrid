@@ -19,10 +19,12 @@ static void simulate(Options& opts, SDL_Renderer* renderer)
     }
     Config& conf = opts.conf;
     unsigned long sim_tick = 0;
-    size_t world_width
-        = conf.world_width > 0. ? conf.world_width : screen_dims.w / 10;
-    size_t world_height
-        = conf.world_height > 0. ? conf.world_height : screen_dims.h / 10;
+    size_t world_width = conf.world_width > 0.
+        ? conf.world_width
+        : screen_dims.w / opts.pixel_width;
+    size_t world_height = conf.world_height > 0.
+        ? conf.world_height
+        : screen_dims.h / opts.pixel_height;
     World world(world_width, world_height);
     srand(time(NULL));
     world.randomize(conf);
