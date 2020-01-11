@@ -1,4 +1,5 @@
 #include "Options.hpp"
+#include <limits.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -16,7 +17,7 @@ static char* get_arg(char* argv[], int& i)
     return argv[i];
 }
 
-static int get_num_arg(char* argv[], int& i, int lower, int upper)
+static long get_num_arg(char* argv[], int& i, long lower, long upper)
 {
     char* arg_string = get_arg(argv, i);
     char* end;
@@ -28,11 +29,11 @@ static int get_num_arg(char* argv[], int& i, int lower, int upper)
     }
     if (arg_long < (long)lower || arg_long > (long)upper) {
         fprintf(stderr,
-            "%s: Numeric argument %s to option %s out of range %d to %d\n",
+            "%s: Numeric argument %s to option %s out of range %ld to %ld\n",
             argv[0], arg_string, argv[i - 1], lower, upper);
         exit(EXIT_FAILURE);
     }
-    return (int)arg_long;
+    return arg_long;
 }
 
 static void print_usage(char* progname, FILE* to)
@@ -61,6 +62,7 @@ Options:\n\
                           7. Sum of the food in all herbivore stomachs.\n\
                          All numbers are printed on one line.\n\
  -no-print-stats         Do not print statistics. This is the default.\n\
+ -tick-limit <limit>     Only run the simulation for <limit> ticks at most.\n\
  -frame-delay <delay>    Delay for <delay> milliseconds per frame.\n\
  -screen-width <width>   Draw the screen <width> screen pixels wide.\n\
  -screen-height <height> Draw the screen <height> screen pixels tall.\n\
@@ -79,13 +81,14 @@ Options:\n\
 
 static void print_version(char* progname)
 {
-    printf("%s version 0.1.2\n", progname);
+    printf("%s version 0.2.0\n", progname);
 }
 
 Options::Options(int argc, char* argv[])
     : conf()
     , draw(true)
     , print_stats(false)
+    , tick_limit(-1)
     , frame_delay(100)
     , screen_width(800)
     , screen_height(600)
@@ -121,6 +124,9 @@ Options::Options(int argc, char* argv[])
         } else if (!strcmp(opt, "-print-stats")) {
             print_stats = true;
         } else if (!strcmp(opt, "-no-print-stats")) {
+            print_stats = false;
+        } else if (!strcmp(opt, "-tick-limit")) {
+            tick_limit = get_num_arg(argv, i, LONG_MIN, LONG_MAX);
             print_stats = false;
         } else if (!strcmp(opt, "-frame-delay")) {
             frame_delay = (unsigned)get_num_arg(argv, i, 0, 2000000000);

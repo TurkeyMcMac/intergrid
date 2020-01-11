@@ -41,6 +41,10 @@ static void simulate(Options& opts, SDL_Renderer* renderer)
                 return;
             }
         }
+        if (opts.tick_limit >= 0
+            && sim_tick >= (unsigned long)opts.tick_limit) {
+            return;
+        }
         if (opts.draw) {
             world.draw(renderer);
             SDL_RenderPresent(renderer);
@@ -68,10 +72,10 @@ int main(int argc, char* argv[])
     SDL_Window* window = NULL;
     SDL_Renderer* renderer = NULL;
     Options opts(argc, argv);
-	Uint32 init_flags = SDL_INIT_TIMER | SDL_INIT_EVENTS;
-	if (opts.draw) {
-		init_flags |= SDL_INIT_VIDEO;
-	}
+    Uint32 init_flags = SDL_INIT_TIMER | SDL_INIT_EVENTS;
+    if (opts.draw) {
+        init_flags |= SDL_INIT_VIDEO;
+    }
     if (SDL_Init(init_flags)) {
         fprintf(stderr, "SDL initialization failed; %s\n", SDL_GetError());
         goto error_sdl_init;

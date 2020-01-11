@@ -12,6 +12,7 @@ public:
     Config conf;
     bool draw;
     bool print_stats;
+    long tick_limit;
     unsigned frame_delay;
     int screen_width;
     int screen_height;
