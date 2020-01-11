@@ -63,6 +63,8 @@ Options:\n\
                          All numbers are printed on one line.\n\
  -no-print-stats         Do not print statistics. This is the default.\n\
  -tick-limit <limit>     Only run the simulation for <limit> ticks at most.\n\
+                         A negative <limit> indicates no limit, and is the\n\
+                         default.\n\
  -frame-delay <delay>    Delay for <delay> milliseconds per frame.\n\
  -screen-width <width>   Draw the screen <width> screen pixels wide.\n\
  -screen-height <height> Draw the screen <height> screen pixels tall.\n\
@@ -81,7 +83,7 @@ Options:\n\
 
 static void print_version(char* progname)
 {
-    printf("%s version 0.2.1\n", progname);
+    printf("%s version 0.2.2\n", progname);
 }
 
 Options::Options(int argc, char* argv[])
