@@ -117,6 +117,10 @@ int Config::parse(const char* path)
     std::string line;
     std::ifstream file;
     file.open(path, std::ifstream::in);
+    if (file.fail()) {
+        fprintf(stderr, "Failed to open configuration file '%s'\n", path);
+        return -1;
+    }
     for (std::getline(file, line); file.good(); std::getline(file, line)) {
         size_t i = skip_space(line, 0);
         if (i >= line.length()) {
@@ -151,6 +155,10 @@ int Config::parse(const char* path)
             fprintf(stderr, "Unknown configuration option: %s\n", key.c_str());
             return -1;
         }
+    }
+    if (file.fail() && !file.eof()) {
+        fprintf(stderr, "Failed while reading configuration file '%s'\n", path);
+        return -1;
     }
     return 0;
 }
