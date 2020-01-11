@@ -211,7 +211,13 @@ void World::simulate(Config& conf)
 static unsigned char amount2color(float amount)
 {
     amount *= 10.;
-    return amount > 255. ? 255 : amount;
+    if (amount < 0.) {
+        return 0;
+    } else if (amount > 255.) {
+        return 255;
+    } else {
+        return amount;
+    }
 }
 
 void World::draw(SDL_Renderer* renderer)
