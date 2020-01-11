@@ -66,7 +66,7 @@ static void simulate(Options& opts, SDL_Renderer* renderer)
 int main(int argc, char* argv[])
 {
     int status = EXIT_FAILURE;
-    SDL_Window* window;
+    SDL_Window* window = NULL;
     SDL_Renderer* renderer = NULL;
     Options opts(argc, argv);
     if (SDL_Init(opts.draw ? SDL_INIT_VIDEO : 0)) {
