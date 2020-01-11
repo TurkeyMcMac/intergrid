@@ -115,9 +115,6 @@ Options::Options(int argc, char* argv[])
         } else if (!strcmp(opt, "-version") || !strcmp(opt, "-v")) {
             print_version(progname);
             exit(EXIT_SUCCESS);
-        } else if (!strcmp(argv[i] /* No leading '-' removed */, "--")) {
-            // "--" ends option parsing.
-            break;
         } else {
             fprintf(stderr, "%s: Invalid option: %s\n", progname, argv[i]);
             print_usage(progname, stderr);
