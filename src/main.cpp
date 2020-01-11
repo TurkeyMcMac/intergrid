@@ -91,6 +91,9 @@ int main(int argc, char* argv[])
                 stderr, "SDL renderer creation failed; %s\n", SDL_GetError());
             goto error_create_surface;
         }
+        // Just in case the background is another color:
+        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+        SDL_RenderClear(renderer);
     }
     simulate(opts, renderer);
     status = EXIT_SUCCESS;
