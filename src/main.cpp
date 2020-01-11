@@ -1,6 +1,7 @@
 #include "Config.hpp"
 #include "Options.hpp"
 #include "World.hpp"
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
@@ -24,7 +25,7 @@ static void simulate(Options& opts, SDL_Renderer* renderer)
         screen_dims.h = opts.screen_height;
     }
     Config& conf = opts.conf;
-    unsigned long sim_tick = 0;
+    uint64_t sim_tick = 0;
     size_t world_width = conf.world_width > 0.
         ? conf.world_width
         : screen_dims.w / opts.pixel_width;
@@ -48,7 +49,7 @@ static void simulate(Options& opts, SDL_Renderer* renderer)
         world.simulate(conf);
         ++sim_tick;
         if (opts.print_stats) {
-            printf("%lu %f %f %f %f %ld %f\n", sim_tick,
+            printf("%" PRIu64 " %f %f %f %f %ld %f\n", sim_tick,
                 world.count_total_temperature(), world.count_total_plants(),
                 world.count_total_water(), world.count_total_clouds(),
                 world.count_total_herbivores(),
