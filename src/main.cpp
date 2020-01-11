@@ -16,8 +16,10 @@ int main(int argc, char* argv[])
     SDL_Event event;
     Options opts(argc, argv);
     Config& conf = opts.conf;
-    size_t world_width = conf.world_width > 0. ? conf.world_width : 1;
-    size_t world_height = conf.world_height > 0. ? conf.world_height : 1;
+    size_t world_width
+        = conf.world_width > 0. ? conf.world_width : opts.screen_width / 10;
+    size_t world_height
+        = conf.world_height > 0. ? conf.world_height : opts.screen_height / 10;
     World world(world_width, world_height);
     srand(time(NULL));
     world.randomize(conf);

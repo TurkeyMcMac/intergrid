@@ -33,8 +33,8 @@ Config::Config()
     , water_initial_max(10.)
     , water_evaporation_temperature_mul(0.01)
     , water_evaporation_plants_mul(0.01)
-    , world_height(60)
-    , world_width(80)
+    , world_height(0)
+    , world_width(0)
 {
 }
 
