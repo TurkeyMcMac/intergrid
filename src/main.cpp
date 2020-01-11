@@ -12,11 +12,13 @@ int main()
     SDL_Renderer* renderer;
     SDL_Event event;
     Config conf;
-    World world(80, 60);
     if (conf.parse("conf") < 0) {
         fputs("Unable to parse configuration\n", stderr);
-        goto error_config;
+        exit(EXIT_FAILURE);
     }
+    size_t world_width = conf.world_width > 0. ? conf.world_width : 1;
+    size_t world_height = conf.world_height > 0. ? conf.world_height : 1;
+    World world(world_width, world_height);
     srand(time(NULL));
     world.randomize(conf);
     if (SDL_Init(SDL_INIT_VIDEO)) {
@@ -61,6 +63,5 @@ error_create_surface:
 error_create_window:
     SDL_Quit();
 error_sdl_init:
-error_config:
     exit(status);
 }

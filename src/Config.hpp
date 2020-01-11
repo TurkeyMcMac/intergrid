@@ -33,6 +33,8 @@ public:
     float water_initial_max;
     float water_evaporation_temperature_mul;
     float water_evaporation_plants_mul;
+    float world_height;
+    float world_width;
 };
 
 #endif /* CONFIG_H_ */

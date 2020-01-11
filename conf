@@ -64,3 +64,8 @@ water_evaporation_temperature_mul = 0.01
 # Like water_evaporation_temperature_mul, but for plants (plants cause
 # evaporation):
 water_evaporation_plants_mul = 0.01
+# The height in tiles of the world, a positive integer (if it is not a positive
+# integer, it will be wrangled into one by some means):
+world_height = 60
+# The world's width, also a positive integer:
+world_width = 80

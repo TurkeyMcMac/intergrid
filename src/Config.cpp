@@ -31,6 +31,8 @@ Config::Config()
     , water_initial_max(10.)
     , water_evaporation_temperature_mul(0.01)
     , water_evaporation_plants_mul(0.01)
+    , world_height(60)
+    , world_width(80)
 {
 }
 
@@ -100,6 +102,10 @@ static bool set_option(Config& conf, std::string& key, float val)
         conf.water_evaporation_temperature_mul = val;
     } else if (key == "water_evaporation_plants_mul") {
         conf.water_evaporation_plants_mul = val;
+    } else if (key == "world_height") {
+        conf.world_height = val;
+    } else if (key == "world_width") {
+        conf.world_width = val;
     } else {
         return false;
     }
