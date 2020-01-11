@@ -4,6 +4,8 @@
 #include <stdlib.h>
 #include <time.h>
 
+using namespace intergrid;
+
 int main()
 {
     int status = EXIT_FAILURE;

@@ -1,6 +1,8 @@
 #ifndef CONFIG_H_
 #define CONFIG_H_
 
+namespace intergrid {
+
 struct Config {
 public:
     // Initializes the default values. See the file "conf" for said defaults.
@@ -36,5 +38,7 @@ public:
     float world_height;
     float world_width;
 };
+
+} /* namespace intergrid */
 
 #endif /* CONFIG_H_ */

@@ -1,5 +1,7 @@
 #include "World.hpp"
 
+using namespace intergrid;
+
 World::World(size_t width, size_t height)
     : temperature(width, height)
     , plants(width, height)

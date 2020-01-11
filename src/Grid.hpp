@@ -3,6 +3,8 @@
 
 #include <stdlib.h>
 
+namespace intergrid {
+
 template <typename T> class Grid {
 public:
     Grid(size_t width, size_t height)
@@ -86,5 +88,7 @@ private:
     size_t height;
     T* tiles;
 };
+
+} /* namespace intergrid */
 
 #endif /* GRID_H_ */

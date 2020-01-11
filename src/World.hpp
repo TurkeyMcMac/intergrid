@@ -5,6 +5,8 @@
 #include "Grid.hpp"
 #include <SDL2/SDL.h>
 
+namespace intergrid {
+
 struct Herbivore {
     float food;
     bool moved;
@@ -43,5 +45,7 @@ private:
     Grid<float> clouds;
     Grid<Herbivore> herbivores;
 };
+
+} /* namespace intergrid */
 
 #endif /* WORLD_H_ */

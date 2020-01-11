@@ -5,6 +5,8 @@
 #include <stdlib.h>
 #include <string>
 
+using namespace intergrid;
+
 Config::Config()
     : clouds_dispersal(0.1)
     , clouds_humidity_decrement(0.1)
