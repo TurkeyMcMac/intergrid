@@ -7,41 +7,25 @@
 
 using namespace intergrid;
 
-int main(int argc, char* argv[])
+static void simulate(Options& opts, SDL_Renderer* renderer)
 {
-    int status = EXIT_FAILURE;
-    unsigned long sim_tick;
-    SDL_Window* window;
-    SDL_Renderer* renderer;
     SDL_Event event;
-    Options opts(argc, argv);
+    SDL_Rect screen_dims;
+    if (opts.draw) {
+        SDL_RenderGetViewport(renderer, &screen_dims);
+    } else {
+        screen_dims.w = opts.screen_width;
+        screen_dims.h = opts.screen_height;
+    }
     Config& conf = opts.conf;
+    unsigned long sim_tick = 0;
     size_t world_width
-        = conf.world_width > 0. ? conf.world_width : opts.screen_width / 10;
+        = conf.world_width > 0. ? conf.world_width : screen_dims.w / 10;
     size_t world_height
-        = conf.world_height > 0. ? conf.world_height : opts.screen_height / 10;
+        = conf.world_height > 0. ? conf.world_height : screen_dims.h / 10;
     World world(world_width, world_height);
     srand(time(NULL));
     world.randomize(conf);
-    if (SDL_Init(opts.draw ? SDL_INIT_VIDEO : 0)) {
-        printf("SDL initialization failed; %s\n", SDL_GetError());
-        goto error_sdl_init;
-    }
-    if (opts.draw) {
-        window = SDL_CreateWindow("Intergrid", SDL_WINDOWPOS_CENTERED,
-            SDL_WINDOWPOS_CENTERED, opts.screen_width, opts.screen_height,
-            SDL_WINDOW_SHOWN);
-        if (!window) {
-            printf("SDL window creation failed; %s\n", SDL_GetError());
-            goto error_create_window;
-        }
-        renderer = SDL_CreateRenderer(window, -1, 0);
-        if (!renderer) {
-            printf("SDL renderer creation failed; %s\n", SDL_GetError());
-            goto error_create_surface;
-        }
-    }
-    sim_tick = 0;
     for (;;) {
         Uint32 ticks = SDL_GetTicks();
         if (SDL_PollEvent(&event) && event.type == SDL_QUIT) {
@@ -66,6 +50,41 @@ int main(int argc, char* argv[])
             SDL_Delay(opts.frame_delay - (new_ticks - ticks));
         }
     }
+}
+
+int main(int argc, char* argv[])
+{
+    int status = EXIT_FAILURE;
+    SDL_Window* window;
+    SDL_Renderer* renderer = NULL;
+    Options opts(argc, argv);
+    if (SDL_Init(opts.draw ? SDL_INIT_VIDEO : 0)) {
+        fprintf(stderr, "SDL initialization failed; %s\n", SDL_GetError());
+        goto error_sdl_init;
+    }
+    if (opts.draw) {
+        window = SDL_CreateWindow("Intergrid", SDL_WINDOWPOS_CENTERED,
+            SDL_WINDOWPOS_CENTERED, opts.screen_width, opts.screen_height,
+            SDL_WINDOW_SHOWN);
+        if (!window) {
+            fprintf(stderr, "SDL window creation failed; %s\n", SDL_GetError());
+            goto error_create_window;
+        }
+        if (opts.fullscreen
+            && SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN_DESKTOP)
+                < 0) {
+            fprintf(stderr, "SDL window fullscreenification failed; %s\n",
+                SDL_GetError());
+            // Keep executing.
+        }
+        renderer = SDL_CreateRenderer(window, -1, 0);
+        if (!renderer) {
+            fprintf(
+                stderr, "SDL renderer creation failed; %s\n", SDL_GetError());
+            goto error_create_surface;
+        }
+    }
+    simulate(opts, renderer);
     status = EXIT_SUCCESS;
     if (opts.draw) {
         SDL_DestroyRenderer(renderer);

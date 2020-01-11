@@ -58,6 +58,7 @@ Options::Options(int argc, char* argv[])
     , frame_delay(100)
     , screen_width(800)
     , screen_height(600)
+    , fullscreen(false)
 {
     char* progname = argv[0];
     for (int i = 1; i < argc; ++i) {
@@ -86,6 +87,10 @@ Options::Options(int argc, char* argv[])
             screen_width = get_pos_num_arg(argv, i);
         } else if (!strcmp(opt, "-screen-height")) {
             screen_height = get_pos_num_arg(argv, i);
+        } else if (!strcmp(opt, "-fullscreen")) {
+            fullscreen = true;
+        } else if (!strcmp(opt, "-no-fullscreen")) {
+            fullscreen = false;
         } else if (!strcmp(opt, "-help") || !strcmp(opt, "-h")) {
             print_help(progname);
             exit(EXIT_SUCCESS);
@@ -96,9 +101,9 @@ Options::Options(int argc, char* argv[])
             // "--" ends option parsing.
             break;
         } else {
-			fprintf(stderr, "%s: Invalid option: %s\n", progname, argv[i]);
+            fprintf(stderr, "%s: Invalid option: %s\n", progname, argv[i]);
             print_usage(progname, stderr);
-			fprintf(stderr, "Type %s -help for more information\n", progname);
+            fprintf(stderr, "Type %s -help for more information\n", progname);
             exit(EXIT_FAILURE);
         }
     }

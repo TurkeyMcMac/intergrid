@@ -15,6 +15,7 @@ public:
     unsigned frame_delay;
     int screen_width;
     int screen_height;
+    bool fullscreen;
 };
 
 } /* namespace intergrid */
