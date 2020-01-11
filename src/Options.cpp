@@ -1,5 +1,4 @@
 #include "Options.hpp"
-#include <limits.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -17,19 +16,20 @@ static char* get_arg(char* argv[], int& i)
     return argv[i];
 }
 
-static int get_pos_num_arg(char* argv[], int& i)
+static int get_num_arg(char* argv[], int& i, int lower, int upper)
 {
     char* arg_string = get_arg(argv, i);
     char* end;
     long arg_long = strtol(arg_string, &end, 10);
     if (*end != '\0') {
-        fprintf(stderr, "%s: Invalid numeric argument to option %s: %s\n",
-            argv[0], argv[i - 1], arg_string);
+        fprintf(stderr, "%s: Invalid numeric argument %s to option %s\n",
+            argv[0], arg_string, argv[i - 1]);
         exit(EXIT_FAILURE);
     }
-    if (arg_long <= 0 || arg_long > INT_MAX) {
-        fprintf(stderr, "%s: Numeric argument to option %s out of range: %s\n",
-            argv[0], argv[i - 1], arg_string);
+    if (arg_long < (long)lower || arg_long > (long)upper) {
+        fprintf(stderr,
+            "%s: Numeric argument %s to option %s out of range %d to %d\n",
+            argv[0], arg_string, argv[i - 1], lower, upper);
         exit(EXIT_FAILURE);
     }
     return (int)arg_long;
@@ -92,19 +92,19 @@ Options::Options(int argc, char* argv[])
         } else if (!strcmp(opt, "-no-print-stats")) {
             print_stats = false;
         } else if (!strcmp(opt, "-frame-delay")) {
-            frame_delay = (unsigned)get_pos_num_arg(argv, i);
+            frame_delay = (unsigned)get_num_arg(argv, i, 0, 2000000000);
         } else if (!strcmp(opt, "-screen-width")) {
-            screen_width = get_pos_num_arg(argv, i);
+            screen_width = get_num_arg(argv, i, 1, 1000000);
         } else if (!strcmp(opt, "-screen-height")) {
-            screen_height = get_pos_num_arg(argv, i);
+            screen_height = get_num_arg(argv, i, 1, 1000000);
         } else if (!strcmp(opt, "-pixel-size")) {
-            int size = get_pos_num_arg(argv, i);
+            int size = get_num_arg(argv, i, 1, 1000000);
             pixel_width = size;
             pixel_height = size;
         } else if (!strcmp(opt, "-pixel-width")) {
-            pixel_width = get_pos_num_arg(argv, i);
+            pixel_width = get_num_arg(argv, i, 1, 1000000);
         } else if (!strcmp(opt, "-pixel-height")) {
-            pixel_height = get_pos_num_arg(argv, i);
+            pixel_height = get_num_arg(argv, i, 1, 1000000);
         } else if (!strcmp(opt, "-fullscreen")) {
             fullscreen = true;
         } else if (!strcmp(opt, "-no-fullscreen")) {
