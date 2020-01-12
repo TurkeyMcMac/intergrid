@@ -27,10 +27,13 @@ void World::randomize(Config& conf)
                 = random_float() * conf.temperature_initial_max;
             water.at(x, y) = random_float() * conf.water_initial_max;
             clouds.at(x, y) = random_float() * conf.clouds_initial_max;
-            herbivores_food.at(x, y)
-                = rand() / (int)(RAND_MAX * conf.herbivores_initial_chance) == 0
-                ? conf.herbivores_initial_food
-                : 0.;
+            if (conf.herbivores_initial_chance > 0.) {
+                herbivores_food.at(x, y)
+                    = rand() / (int)(RAND_MAX * conf.herbivores_initial_chance)
+                        == 0
+                    ? conf.herbivores_initial_food
+                    : 0.;
+            }
         }
     }
 }
