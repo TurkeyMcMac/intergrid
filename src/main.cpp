@@ -89,7 +89,7 @@ int main(int argc, char* argv[])
         }
         window = SDL_CreateWindow("Intergrid", SDL_WINDOWPOS_CENTERED,
             SDL_WINDOWPOS_CENTERED, opts.screen_width, opts.screen_height,
-            SDL_WINDOW_SHOWN);
+            SDL_WINDOW_SHOWN | SDL_WINDOW_ALLOW_HIGHDPI);
         if (!window) {
             fprintf(stderr, "SDL window creation failed; %s\n", SDL_GetError());
             goto error_create_window;
