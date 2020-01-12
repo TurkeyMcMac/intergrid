@@ -81,6 +81,12 @@ int main(int argc, char* argv[])
         goto error_sdl_init;
     }
     if (opts.draw) {
+        // Metal is amazingly slow for some reason; try using OpenGL instead:
+        SDL_RendererInfo renderer_info;
+        if (SDL_GetRenderDriverInfo(0, &renderer_info) == 0
+            && !strcmp(renderer_info.name, "metal")) {
+            SDL_SetHint(SDL_HINT_RENDER_DRIVER, "opengl");
+        }
         window = SDL_CreateWindow("Intergrid", SDL_WINDOWPOS_CENTERED,
             SDL_WINDOWPOS_CENTERED, opts.screen_width, opts.screen_height,
             SDL_WINDOW_SHOWN);
