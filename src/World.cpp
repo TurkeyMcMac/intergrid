@@ -235,6 +235,7 @@ void World::draw(SDL_Renderer* renderer)
                 amount2color(temperature.at(x, y) * 2.),
                 amount2color(plants.at(x, y) * 3.),
                 amount2color(water.at(x, y) * 2.), 255);
+            SDL_RenderFillRect(renderer, &tile);
             if (herbivores_food.at(x, y) > 0.) {
                 tile.x += 1;
                 tile.y += 1;
@@ -243,7 +244,6 @@ void World::draw(SDL_Renderer* renderer)
                 SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
                 SDL_RenderFillRect(renderer, &tile);
             }
-            SDL_RenderFillRect(renderer, &tile);
         }
     }
 }
