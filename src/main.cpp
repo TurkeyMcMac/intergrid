@@ -1,8 +1,10 @@
 #include "Config.hpp"
 #include "Options.hpp"
 #include "World.hpp"
+#include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <time.h>
 
 using namespace intergrid;
@@ -52,12 +54,16 @@ static void simulate(Options& opts, SDL_Renderer* renderer)
         world.simulate(conf);
         ++sim_tick;
         if (opts.print_stats) {
-            printf("%lu %f %f %f %f %ld %f\n", sim_tick,
+            int writ = printf("%lu %f %f %f %f %ld %f\n", sim_tick,
                 world.count_total_temperature(), world.count_total_plants(),
                 world.count_total_water(), world.count_total_clouds(),
                 world.count_total_herbivores(),
                 world.count_total_herbivore_food());
-            fflush(stdout);
+            if (writ < 0 || fflush(stdout)) {
+                fprintf(stderr, "Write error: %s\n", strerror(errno));
+                // Don't return failure; it's probably just a broken pipe.
+                return;
+            }
         }
         Uint32 new_ticks = SDL_GetTicks();
         if (new_ticks - ticks < opts.frame_delay) {
